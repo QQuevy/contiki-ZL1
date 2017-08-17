@@ -39,10 +39,9 @@
 #include "contiki.h"
 #include "lib/sensors.h"
 #include "dev/button-sensor.h"
-//#include "dev/tmp102.h"
-//#include "dev/adxl345.h"
+#include "dev/tmp102.h"
+#include "dev/adxl345.h"
 /*---------------------------------------------------------------------------*/
 /** \brief Exports global symbols for the sensor API */
-//SENSORS(&button_sensor, &adxl345, &tmp102);
-SENSORS(&button_sensor);
+SENSORS(&button_sensor, &adxl345, &tmp102);
 /*---------------------------------------------------------------------------*/
