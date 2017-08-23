@@ -3,7 +3,7 @@
 
 #include "contiki.h"
 int lora_initialize();
-void RN2483_version();
+void RN2483_VERSION();
 void RN2483_sleep(int duration);
 void RN2483_reset();
 void RN2483_Freset();
