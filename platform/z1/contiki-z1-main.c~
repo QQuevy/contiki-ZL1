@@ -36,7 +36,7 @@
 #include "cc2420.h"
 #include "dev/leds.h"
 #include "dev/serial-line.h"
-#include "dev/lora-reception.h"
+#include "dev/rn2483/lora-reception.h"
 #include "dev/slip.h"
 #include "dev/uart0.h"
 #include "dev/uart1.h"

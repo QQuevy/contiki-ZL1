@@ -8,10 +8,8 @@
 #include "sys/ctimer.h"
 #include "core/sys/rtimer.h"
 
-
 #include "RN2483.h"
-#include "dev/lora-send.h"
-#include "dev/lora-reception.h"
+#include "dev/rn2483/rn2483-uart.h"
 static char rxbuf_data[64]={0};
 #define INTER_PACKET_INTERVAL  RTIMER_ARCH_SECOND/ 10 //=100ms
 #define CLEAR_RXBUF()		(rxbuf_data[0] = 0)
@@ -24,7 +22,7 @@ static unsigned short packet_payload_len=0;
 static char *lora_rxbuf;
 
 char *system_enum[3]={"ver","vdd","hweui"};
-/*---------------------------------------------------------------------------*///DONT FORGET MAC RESUME AT END MAC PAUSE
+/*---------------------------------------------------------------------------*/
 void blink_led();
 static void BRScallback(void *ptr);// get Brief Radio Settings callback
 static void RScallback(char ptr[20][24]);// Radio Settings callback
@@ -374,14 +372,14 @@ void ptp_receive(int window)//point-to-point link
    itoa(window,cwindow,10);
    c = malloc(strlen(cwindow)+10);
    strcpy(c,"radio rx ");
-   strcat(c,cwindow);// see if its correct 
-   strcat(c,"\r\n"); // put these 2 lines in a function ?? 
+   strcat(c,cwindow);
+   strcat(c,"\r\n");
    printf("waiting for reception...");
    lora_send(c);
    free(c);
 }
 /*---------------------------------------------------------------------------*/
-void cw_state(char *state)//continous wave state .. kan ook simpelder of zelfs in radio set setting ..
+void cw_state(char *state)//continous wave state
 {
    printf("pause mac: ...\r\n");
    printf("changing cw state: ...\r\n");

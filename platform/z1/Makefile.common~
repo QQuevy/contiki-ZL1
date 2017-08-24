@@ -1,5 +1,5 @@
 # Common Makefile between the Z1 and Z1SP
-
+PROJECT_SOURCEFILES += lora-reception.c 
 ifdef GCC
 CFLAGS+=-Os -g
 endif
@@ -12,12 +12,12 @@ endif
 
 CLEAN += symbols.c symbols.h
 
-ARCH = msp430.c leds.c watchdog.c xmem.c i2cmaster.c \
+ARCH = msp430.c leds.c watchdog.c xmem.c \
        spi.c cc2420.c cc2420-arch.c cc2420-arch-sfd.c\
        node-id.c sensors.c button-sensor.c cfs-coffee.c \
        radio-sensor.c uart0.c uart0-putchar.c uip-ipchksum.c \
-       slip.c slip_uart0.c z1-sensors.c adxl345.c temperature-sensor.c \
-       z1-phidgets.c light-sensor.c battery-sensor.c sky-sensors.c tmp102.c
+       slip.c slip_uart0.c z1-sensors.c temperature-sensor.c \
+       z1-phidgets.c light-sensor.c battery-sensor.c sky-sensors.c uart1.c
 
 CONTIKI_TARGET_DIRS = . dev apps net
 ifndef CONTIKI_TARGET_MAIN

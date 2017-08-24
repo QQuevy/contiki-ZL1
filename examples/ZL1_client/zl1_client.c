@@ -45,7 +45,7 @@
 #include "dev/z1-phidgets.h"
 #include "sys/etimer.h"
 #include "lib/RN2483.h"
-#include "dev/lora-reception.h"
+#include "dev/lora-send.h"
 #define RELAY_INTERVAL (CLOCK_SECOND)
 /*---------------------------------------------------------------------------*/
 PROCESS(send_sensor_process, "process sending photocell value");
@@ -59,19 +59,21 @@ PROCESS_THREAD(send_sensor_process, ev, data)
   lora_initialize();
   SENSORS_ACTIVATE(phidgets);
   SENSORS_ACTIVATE(button_sensor);
-  set_radio_settings("pwr","14","mod","lora",(char *)NULL);
+  set_radio_settings("pwr","14","pwr","14",(char *)NULL);
   static int i=0;
   while(1) {
 	  PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
 	  leds_toggle(LEDS_GREEN);
 	  if(i==1){
- 	  char illuminance[5];
+ 	  lora_send("mac pause\r\n");}
+	  else if(i==2){
+   	  char illuminance[5];
 	  float lux=phidgets.value(PHIDGET3V_2)/4.095;// voltage=value*3.3/4095 and lux=voltage*1000/3.3 (approximation)
 	  itoa((int)lux, illuminance, 10);
 	  printf("illuminance:%s\n", illuminance);
-	  ptp_send(illuminance);}
-	  else if(i==2){
-   	  RN2483_sleep(7000);}
+	  //ptp_send(illuminance);
+	  lora_send("radio tx 5000\r\n");
+	  }
 	  else if(i==6){
    	  i=0;}
 	  i++;
