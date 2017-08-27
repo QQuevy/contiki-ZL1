@@ -8,6 +8,10 @@
 #include "sys/ctimer.h"
 #include "core/sys/rtimer.h"
 
+#include "net/packetbuf.h"
+#include "net/rime/rimestats.h"
+#include "net/netstack.h"
+
 #include "RN2483.h"
 #include "dev/rn2483/rn2483-uart.h"
 static char rxbuf_data[64]={0};
@@ -19,7 +23,6 @@ static int i=0;
 static int u=10;
 static const void *packet_payload;
 static unsigned short packet_payload_len=0;
-static char *lora_rxbuf;
 
 char *system_enum[3]={"ver","vdd","hweui"};
 /*---------------------------------------------------------------------------*/
@@ -67,6 +70,7 @@ return 1;
 static int lora_prepare(const void *payload, unsigned short payload_len)
 {
 printf("Prepare in: %u bytes\n",payload_len);
+RIMESTATS_ADD(lltx);
 if(payload_len>64){return 0;}
 packet_payload=payload;
 packet_payload_len=payload_len;
@@ -103,7 +107,8 @@ if(bufsize<64){
 printf("buffer too small");
 return 0;
 }
-memcpy(buf,lora_rxbuf,packet_payload_len+1);
+memcpy(buf,rxbuf_data,packet_payload_len+1);
+RIMESTATS_ADD(llrx);
 CLEAR_RXBUF();
 return 1;
 }
@@ -127,13 +132,14 @@ return !IS_RXBUF_EMPTY();
 static int lora_off(void)
 {
 printf("radio off\n");
-RN2483_sleep(1500);
+RN2483_sleep(15000);
 return 1;
 }
 /*---------------------------------------------------------------------------*/
 static int lora_on(void)
 {
-printf("wait till radio on\n");
+printf("radio on\n");
+lora_send((int)0x55);
 return 1;
 }
 /*---------------------------------------------------------------------------*/
@@ -680,12 +686,18 @@ while(RTIMER_CLOCK_LT(RTIMER_NOW(), time + INTER_PACKET_INTERVAL)) { }
 /*---------------------------------------------------------------------------*/
 PROCESS_THREAD(lora_process,ev,data)
 {   
+int len;
 PROCESS_BEGIN();
 printf("process started");
 while(1) {
     PROCESS_YIELD_UNTIL(ev == lora_event_message);
+    packetbuf_clear();
+    strcpy(rxbuf_data,(char *)data);
+    len=lora_radio_read(packetbuf_dataptr(),PACKETBUF_SIZE);
     printf("%s\n", (char *)data);
-    lora_rxbuf=(char *)data;
+    packetbuf_set_datalen(len);
+
+    NETSTACK_RDC.input();
   }
   PROCESS_END();
 }

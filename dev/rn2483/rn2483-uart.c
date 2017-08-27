@@ -50,7 +50,7 @@
 
 static struct ringbuf rxbuf;
 static uint8_t rxbuf_data[BUFSIZE];
-
+static int newline=0x0A;
 PROCESS(lora_reception_process, "LoRa reception driver");
 
 process_event_t lora_event_message;
@@ -100,7 +100,7 @@ PROCESS_THREAD(lora_reception_process, ev, data)
     
     if(c == -1) {
       /* Buffer empty, wait for poll */
-      PROCESS_YIELD();
+      PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL);
     } else {
       if(c != END) {
         if(ptr < BUFSIZE-1) {
@@ -135,17 +135,14 @@ lora_reception_init(void)
   process_start(&lora_reception_process, NULL);
 }
 /*---------------------------------------------------------------------------*/
-int
+void
 lora_send(char *c)
 {
 int i=0;
-while(1){
-   uart1_writeb(c[i]);
-   if(c[i]==0x0A){ // if a newline charachter is detected stop sending
-      break;
-   }
-i++;
+while(c[i] != newline)// if a newline character is detected, stop sending after newline 
+{
+  uart1_writeb(c[i++]);
 }
- return 1;
+uart1_writeb(newline);
 }
 /*---------------------------------------------------------------------------*/

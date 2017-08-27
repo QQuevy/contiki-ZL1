@@ -37,8 +37,8 @@
  * modified by Quentin Quevy
  *
  */
-#ifndef LORA_RECEPTION_H_
-#define LORA_RECEPTION_H_
+#ifndef RN2483_UART_H_
+#define RN2483_UART_H_
 
 #include "contiki.h"
 
@@ -73,6 +73,8 @@ extern process_event_t lora_event_message;
 int lora_input_byte(unsigned char c);
 
 void lora_reception_init(void);
+
+void lora_send(char *c);
 
 PROCESS_NAME(lora_reception_process);
 

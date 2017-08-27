@@ -74,7 +74,7 @@ int lora_input_byte(unsigned char c);
 
 void lora_reception_init(void);
 
-int lora_send(char *c);
+void lora_send(char *c);
 
 PROCESS_NAME(lora_reception_process);
 

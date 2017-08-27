@@ -33,7 +33,7 @@
 #include <string.h> /* for memcpy() */
 
 #include "lib/ringbuf.h"
-
+#include "uart1.h"
 #ifdef LORA_RECEPTION_CONF_BUFSIZE
 #define BUFSIZE LORA_RECEPTION_CONF_BUFSIZE
 #else /* LORA_RECEPTION_CONF_BUFSIZE */
@@ -50,7 +50,7 @@
 
 static struct ringbuf rxbuf;
 static uint8_t rxbuf_data[BUFSIZE];
-
+static int newline=0x0A;
 PROCESS(lora_reception_process, "LoRa reception driver");
 
 process_event_t lora_event_message;
@@ -100,7 +100,7 @@ PROCESS_THREAD(lora_reception_process, ev, data)
     
     if(c == -1) {
       /* Buffer empty, wait for poll */
-      PROCESS_YIELD();
+      PROCESS_YIELD_UNTIL(ev == PROCESS_EVENT_POLL);
     } else {
       if(c != END) {
         if(ptr < BUFSIZE-1) {
@@ -133,5 +133,16 @@ lora_reception_init(void)
 {
   ringbuf_init(&rxbuf, rxbuf_data, sizeof(rxbuf_data));
   process_start(&lora_reception_process, NULL);
+}
+/*---------------------------------------------------------------------------*/
+void
+lora_send(char *c)
+{
+int i=0;
+while(c[i] != newline)// if a newline character is detected, stop sending after newline 
+{
+  uart1_writeb(c[i++]);
+}
+uart1_writeb(newline);
 }
 /*---------------------------------------------------------------------------*/
