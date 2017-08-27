@@ -385,6 +385,29 @@ void ptp_receive(int window)//point-to-point link
    free(c);
 }
 /*---------------------------------------------------------------------------*/
+/*static void
+ptpcallback(char ptr[24])
+{
+	if(i==0){
+	printf("mac pause: \r\n");
+	lora_send("mac pause\r\n");
+	i++;
+	ctimer_reset(&timer);
+	}
+	if(i==1){
+	printf("%s",ptr[i-1]);
+	lora_send(ptr[i-1]);
+	i++;
+	ctimer_reset(&timer);
+	}
+	else{
+	printf("mac resume: ");
+	lora_send("mac resume\r\n");
+	i=0;
+	blink_led();
+	}
+}*/
+/*---------------------------------------------------------------------------*/
 void cw_state(char *state)//continous wave state
 {
    printf("pause mac: ...\r\n");

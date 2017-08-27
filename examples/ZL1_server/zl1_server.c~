@@ -57,7 +57,7 @@ PROCESS_THREAD(send_sensor_process, ev, data)
   lora_send("mac pause\r\n");
   while(1) {
 	  PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-	  ptp_receive(100);
+	  ptp_receive(300);
 	  etimer_reset(&et);
   }
   PROCESS_END();

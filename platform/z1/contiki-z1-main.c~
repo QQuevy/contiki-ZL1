@@ -36,7 +36,7 @@
 #include "cc2420.h"
 #include "dev/leds.h"
 #include "dev/serial-line.h"
-#include "dev/rn2483/lora-reception.h"
+//#include "dev/rn2483/rn2483-uart.h"
 #include "dev/slip.h"
 #include "dev/uart0.h"
 #include "dev/uart1.h"
@@ -379,9 +379,9 @@ main(int argc, char **argv)
 //#endif
 
   uart0_set_input(serial_line_input_byte);
-  uart1_set_input(lora_input_byte);
+  //uart1_set_input(lora_input_byte);
   serial_line_init();
-  lora_reception_init();
+  //lora_reception_init();
 
 
   leds_off(LEDS_GREEN);

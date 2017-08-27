@@ -4,7 +4,6 @@ CONTIKI_TARGET_SOURCEFILES += contiki-z1-platform.c
 CLEAN += *.z1 
 
 include $(CONTIKI)/platform/z1/Makefile.common
-include $(CONTIKI)/dev/rn2483/lora-reception.h
 
 ifeq ($(ZOLERTIA_Z1SP),1)
 include $(CONTIKI)/platform/z1/Makefile.z1sp
@@ -13,5 +12,6 @@ endif
 MODULES += core/net \
            core/net/mac core/net/mac/contikimac \
            core/net/llsec core/net/llsec/noncoresec \
-           dev/cc2420 
+           dev/cc2420 \
+	   
 
