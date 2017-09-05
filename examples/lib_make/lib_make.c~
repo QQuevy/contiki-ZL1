@@ -1,7 +1,9 @@
 #include "contiki.h"
 #include "sys/etimer.h"
-//#include "dev/rn2483/rn2483-uart.h"
-//#include "dev/rn2483/RN2483.h"
+#include "dev/button-sensor.h"
+#include <stdlib.h>
+#include "dev/leds.h"
+#include "dev/z1-phidgets.h"
 #include <stdio.h> 
 #define RELAY_INTERVAL (CLOCK_SECOND)
 /*---------------------------------------------------------------------------*/
@@ -12,33 +14,34 @@ PROCESS_THREAD(radio_settings_process, ev, data)
 {
   static struct etimer et;
   PROCESS_BEGIN();
-  etimer_set(&et, 7*CLOCK_SECOND);
+  etimer_set(&et, CLOCK_SECOND);
   lora_initialize();
-  //set_radio_settings("pwr","14","pwr","14",(char *)NULL);
+  SENSORS_ACTIVATE(phidgets);
+  SENSORS_ACTIVATE(button_sensor);
+  power("10");
   static int i=0;
   while(1){
 	  PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
 	  if(i==0){
-		lora_send("mac pause\r\n");
+		macpause();
+		i=1;
 	  }
-	  if(i==1){
-		lora_send("radio set pwr 14\r\n");
-	  }
-	  if(i==2)
+	  else
 	  {
-		lora_send("radio tx 1234\r\n");
+	  char illuminance[5];
+	  float lux=phidgets.value(PHIDGET3V_2)/4.095;// voltage=value*3.3/4095 and lux=voltage*1000/3.3 (approximation)
+	  itoa((int)lux, illuminance, 10);
+	  printf("illuminance:%s\n", illuminance);
+
+	   char* c;
+	   c = malloc(strlen(illuminance)+10);
+	   strcpy(c,"radio tx ");
+	   strcat(c,illuminance);
+	   strcat(c,"\r\n");
+	   lora_send(c);
+	   free(c);
+	   //ptp_send(C);
 	  }
-	  if(i==4)
-	  {
-		lora_send("radio get pwr\r\n");
-	 	i=1;
-	  }
-	  i++;
-	  //ptp_send("1234");
-	  //lora_send("radio tx 1234\r\n");
-	  //ptp_receive(0);
-	  //RN2483_version();
-	  //RN2483_sleep(5000);
 	  etimer_reset(&et);
   }
   PROCESS_END();

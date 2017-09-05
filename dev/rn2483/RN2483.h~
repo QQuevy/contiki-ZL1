@@ -23,7 +23,6 @@ int get_mac_channel_settings(const char *first, ...);
 
 void radio_settings();
 void macpause();
-void power(char *power);
 void ptp_send(char *message);
 void ptp_receive(int window);
 void cw_state(char *state);

@@ -380,9 +380,10 @@ void ptp_send(char *message)//point-to-point link: hex value; 48656c6c6f = hello
         char* c;
 	c = malloc(strlen(message)+20);
 	strcpy(c,"radio tx ");
-	printf("sending message: ");
+	//printf("sending message: ");
         strcat(c,message);
         strcat(c,"\r\n");
+        printf("%s",c);
         lora_send(c);
 	blink_led();
 }
